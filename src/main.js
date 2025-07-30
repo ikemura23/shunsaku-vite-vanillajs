@@ -48,7 +48,7 @@ function formatElapsedTime() {
 }
 
 // 参加者カード作成
-function createParticipantCard(participant) {
+function createParticipantCard(participant, isUpdating = false) {
   const scores = currentScores[participant.id];
   const totalScore = scores.voice + scores.face;
   
@@ -57,11 +57,11 @@ function createParticipantCard(participant) {
       <div class="participant-name">${participant.name}</div>
       <div class="score-item">
         <span class="score-label">🎤 声の感情</span>
-        <span class="score-value">${scores.voice}</span>
+        <span class="score-value ${isUpdating ? 'score-updating' : ''}">${scores.voice}</span>
       </div>
       <div class="score-item">
         <span class="score-label">😊 表情</span>
-        <span class="score-value">${scores.face}</span>
+        <span class="score-value ${isUpdating ? 'score-updating' : ''}">${scores.face}</span>
       </div>
       <div class="total-score">
         合計: ${totalScore}点
@@ -114,18 +114,20 @@ function updateScores() {
     };
   });
   
-  // 計測中画面更新
-  updateMeasuringScreen();
+  // 計測中画面更新（更新アニメーション付き）
+  updateMeasuringScreen(true);
 }
 
 // 計測中画面更新
-function updateMeasuringScreen() {
+function updateMeasuringScreen(withAnimation = false) {
   // 経過時間更新
   document.getElementById('elapsed-time').textContent = formatElapsedTime();
   
   // 参加者カード更新
   const participantsGrid = document.getElementById('participants-grid');
-  participantsGrid.innerHTML = participants.map(createParticipantCard).join('');
+  participantsGrid.innerHTML = participants.map(participant => 
+    createParticipantCard(participant, withAnimation)
+  ).join('');
   
   // 全体メーター更新
   const overallScore = calculateOverallScore();
@@ -136,6 +138,15 @@ function updateMeasuringScreen() {
   meterFill.style.width = `${Math.min(overallScore / 2, 100)}%`;
   meterScoreElement.textContent = overallScore;
   meterMessage.textContent = getMeterMessage(overallScore);
+  
+  // アニメーションクラスを少し後に削除
+  if (withAnimation) {
+    setTimeout(() => {
+      document.querySelectorAll('.score-value.score-updating').forEach(score => {
+        score.classList.remove('score-updating');
+      });
+    }, 600);
+  }
 }
 
 // 結果画面更新

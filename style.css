@@ -1,22 +1,22 @@
 :root {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
   font-weight: 400;
-  
+
   /* カラフルな色定義 */
-  --color-primary: #FF6B6B;
-  --color-secondary: #4ECDC4;
-  --color-accent: #45B7D1;
-  --color-warning: #FFA726;
-  --color-success: #66BB6A;
-  --color-purple: #AB47BC;
-  
+  --color-primary: #ff6b6b;
+  --color-secondary: #4ecdc4;
+  --color-accent: #45b7d1;
+  --color-warning: #ffa726;
+  --color-success: #66bb6a;
+  --color-purple: #ab47bc;
+
   /* 参加者色 */
-  --participant-1: #FF6B6B; /* 赤 */
-  --participant-2: #4ECDC4; /* 青緑 */
-  --participant-3: #FFA726; /* オレンジ */
-  --participant-4: #AB47BC; /* 紫 */
-  
+  --participant-1: #ff6b6b; /* 赤 */
+  --participant-2: #4ecdc4; /* 青緑 */
+  --participant-3: #ffa726; /* オレンジ */
+  --participant-4: #ab47bc; /* 紫 */
+
   /* 背景色 */
   --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --card-bg: rgba(255, 255, 255, 0.95);
@@ -98,7 +98,6 @@ body {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border-left: 6px solid;
-  animation: fadeInUp 0.6s ease;
 }
 
 .participant-card:hover {
@@ -106,10 +105,18 @@ body {
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
 
-.participant-card.color-1 { border-left-color: var(--participant-1); }
-.participant-card.color-2 { border-left-color: var(--participant-2); }
-.participant-card.color-3 { border-left-color: var(--participant-3); }
-.participant-card.color-4 { border-left-color: var(--participant-4); }
+.participant-card.color-1 {
+  border-left-color: var(--participant-1);
+}
+.participant-card.color-2 {
+  border-left-color: var(--participant-2);
+}
+.participant-card.color-3 {
+  border-left-color: var(--participant-3);
+}
+.participant-card.color-4 {
+  border-left-color: var(--participant-4);
+}
 
 .participant-name {
   font-size: 1.3rem;
@@ -141,6 +148,11 @@ body {
   background: #f0f0f0;
   min-width: 50px;
   text-align: center;
+  transition: all 0.3s ease;
+}
+
+.score-value.score-updating {
+  animation: scoreUpdate 0.5s ease;
 }
 
 .total-score {
@@ -188,7 +200,7 @@ body {
 
 .meter-fill {
   height: 100%;
-  background: linear-gradient(90deg, #FF6B6B, #FFA726, #66BB6A);
+  background: linear-gradient(90deg, #ff6b6b, #ffa726, #66bb6a);
   border-radius: 15px;
   transition: width 0.5s ease;
   width: 0%;
@@ -220,7 +232,7 @@ body {
 .grade-display {
   font-size: 8rem;
   font-weight: bold;
-  background: linear-gradient(45deg, #FF6B6B, #4ECDC4, #FFA726, #AB47BC);
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #ffa726, #ab47bc);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 20px;
@@ -301,10 +313,18 @@ body {
   font-weight: bold;
 }
 
-.final-participant-card.color-1 { background: var(--participant-1); }
-.final-participant-card.color-2 { background: var(--participant-2); }
-.final-participant-card.color-3 { background: var(--participant-3); }
-.final-participant-card.color-4 { background: var(--participant-4); }
+.final-participant-card.color-1 {
+  background: var(--participant-1);
+}
+.final-participant-card.color-2 {
+  background: var(--participant-2);
+}
+.final-participant-card.color-3 {
+  background: var(--participant-3);
+}
+.final-participant-card.color-4 {
+  background: var(--participant-4);
+}
 
 /* ボタン */
 .controls {
@@ -326,7 +346,7 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
   color: white;
 }
 
@@ -353,8 +373,62 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* リアルタイム感のアニメーション */
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes dataLoading {
+  0%,
+  50%,
+  100% {
+    opacity: 1;
+  }
+  25%,
+  75% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes ripple {
+  0% {
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+  }
+}
+
+@keyframes scoreUpdate {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+    background-color: #ffe082;
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* レスポンシブ */
@@ -362,20 +436,20 @@ body {
   .header h1 {
     font-size: 2rem;
   }
-  
+
   .participants-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .meter-container {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .grade-display {
     font-size: 5rem;
   }
-  
+
   .summary-stats {
     grid-template-columns: 1fr;
   }
