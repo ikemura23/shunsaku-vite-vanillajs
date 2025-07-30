@@ -4,17 +4,70 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vite + Vanilla JS App</title>
+  <title>会議雰囲気スコア測定システム</title>
 </head>
 <body>
   <div id="app">
-    <h1>Hello Vite + Vanilla JS!</h1>
-    <div class="card">
-      <button id="counter" type="button">Count is 0</button>
+    <!-- 計測中画面 -->
+    <div id="measuring-screen" class="screen">
+      <header class="header">
+        <h1>🎯 会議雰囲気スコア測定中...</h1>
+        <div class="timer">経過時間: <span id="elapsed-time">00:00</span></div>
+      </header>
+
+      <main class="main-content">
+        <div class="participants-grid" id="participants-grid">
+          <!-- 参加者カードがJSで動的生成される -->
+        </div>
+
+        <div class="overall-meter">
+          <h2>🌈 全体の雰囲気</h2>
+          <div class="meter-container">
+            <div class="meter-bar">
+              <div class="meter-fill" id="overall-meter-fill"></div>
+            </div>
+            <div class="meter-score" id="overall-score">0</div>
+          </div>
+          <div class="meter-message" id="meter-message">測定中...</div>
+        </div>
+      </main>
+
+      <footer class="controls">
+        <button id="show-results-btn" class="btn btn-primary">📊 結果を見る</button>
+      </footer>
     </div>
-    <p class="read-the-docs">
-      Click on the Vite logo to learn more
-    </p>
+
+    <!-- 結果画面 -->
+    <div id="results-screen" class="screen hidden">
+      <header class="header">
+        <h1>📋 会議結果レポート</h1>
+      </header>
+
+      <main class="main-content">
+        <div class="result-grade">
+          <div class="grade-display" id="grade-display">A</div>
+          <div class="grade-message" id="grade-message">この会議、なかなか良いじゃん！🎉</div>
+        </div>
+
+        <div class="result-summary">
+          <h2>📈 サマリー</h2>
+          <div class="summary-stats" id="summary-stats">
+            <!-- 統計情報がJSで動的生成される -->
+          </div>
+        </div>
+
+        <div class="participants-final" id="participants-final">
+          <h2>👥 参加者別結果</h2>
+          <div class="final-participants-grid" id="final-participants-grid">
+            <!-- 最終結果がJSで動的生成される -->
+          </div>
+        </div>
+      </main>
+
+      <footer class="controls">
+        <button id="restart-btn" class="btn btn-secondary">🔄 もう一度測定</button>
+      </footer>
+    </div>
   </div>
   <script type="module" src="/src/main.js"></script>
 </body>
