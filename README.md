@@ -140,6 +140,17 @@ server: {
 - [MDN Web Docs - JavaScript](https://developer.mozilla.org/ja/docs/Web/JavaScript)
 - [MDN Web Docs - CSS](https://developer.mozilla.org/ja/docs/Web/CSS)
 
+## 📸 スクリーンショット・デモ
+
+### 計測中画面
+![計測中画面](assets/screenshots/screenshot-01-measuring-screen.png)
+
+### 結果画面
+![結果画面](assets/screenshots/screenshot-02-results-screen.png)
+
+### デモ動画
+[全体の操作フロー動画](assets/videos/demo-full-workflow.mp4)
+
 ## 🤝 開発のヒント
 
 1. **ホットリロード**: ファイルを保存すると自動でブラウザが更新されます
