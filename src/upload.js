@@ -63,6 +63,7 @@ function showAuthPage() {
           <div class="card-actions justify-center mt-6">
             <button id="auth-btn" class="btn btn-primary">認証する</button>
             <button class="btn btn-outline" onclick="navigateTo('home')">戻る</button>
+            <button id="debug-auth-btn" class="btn btn-warning btn-sm">🐛 デバッグ認証</button>
           </div>
         </div>
       </div>
@@ -146,6 +147,7 @@ function showUploadForm() {
 function setupAuthEventListeners() {
   const passwordInput = document.getElementById('password-input')
   const authBtn = document.getElementById('auth-btn')
+  const debugAuthBtn = document.getElementById('debug-auth-btn')
   
   const handleAuth = () => {
     const password = passwordInput.value
@@ -164,7 +166,16 @@ function setupAuthEventListeners() {
     }
   }
   
+  const handleDebugAuth = () => {
+    // デバッグ認証（パスワードをスキップ）
+    window.swingApp.isAuthenticated = true
+    storage.save('isPresident', true)
+    notifyUtils.success('🐛 デバッグ認証でログインしました')
+    showUploadForm()
+  }
+  
   authBtn.addEventListener('click', handleAuth)
+  debugAuthBtn.addEventListener('click', handleDebugAuth)
   passwordInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
       handleAuth()
