@@ -1,6 +1,6 @@
 # Vite + Vanilla JS プロジェクト
 
-このプロジェクトは、ViteとVanilla JavaScriptを使用したモダンなWeb開発環境です。
+このプロジェクトは、Vite + Vanilla JavaScript + Tailwind CSS + daisyUIを使用したモダンなWeb開発環境です。
 
 ## 📁 プロジェクト構成
 
@@ -48,8 +48,10 @@ npm run preview
 
 ### プロジェクトの特徴
 - **ES Modules**: モダンなJavaScriptモジュールシステム
-- **ダークモード対応**: CSS media queryによる自動切り替え
-- **レスポンシブデザイン**: モバイルファーストなスタイリング
+- **Tailwind CSS**: ユーティリティファーストCSSフレームワーク
+- **daisyUI**: 美しいコンポーネントライブラリ
+- **ダークモード対応**: daisyUIによるテーマ切り替え機能
+- **レスポンシブデザイン**: Tailwindのブレークポイントシステム
 
 ## 📝 ファイル詳細
 
@@ -94,12 +96,11 @@ npm install <library-name>
 import { someFunction } from 'library-name'
 ```
 
-### CSS フレームワークの追加
-例: Tailwind CSS
-```bash
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
-```
+### CSS フレームワーク
+Tailwind CSS + daisyUIが既にセットアップ済みです:
+- **Tailwind CSS**: ユーティリティクラスでスタイリング
+- **daisyUI**: コンポーネントクラスでUI構築
+- **設定ファイル**: `tailwind.config.js`, `postcss.config.js`
 
 ## 🔧 トラブルシューティング
 

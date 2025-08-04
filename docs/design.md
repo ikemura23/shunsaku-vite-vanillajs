@@ -3,8 +3,13 @@
 **方針**: プロトタイプなので複雑なアーキテクチャやAPI設計は不要。シンプルで素早く作れる構成を優先。
 
 ## 基本構成
-- 使用技術: Vite + Vanilla JS + HTML + CSS
+- 使用技術: Vite + Vanilla JS + HTML + Tailwind CSS + daisyUI
 - ファイル構成: シンプルなフラット構造
+
+## UI/スタイリング
+- Tailwind CSS: ユーティリティファーストCSSフレームワーク
+- daisyUI: Tailwind CSS上に構築されたコンポーネントライブラリ
+- レスポンシブデザイン対応
 
 ## データ管理
 - グローバル変数やlocalStorageを使用

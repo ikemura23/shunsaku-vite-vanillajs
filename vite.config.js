@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { resolve } from 'path'
 
 export default defineConfig({
   server: {
@@ -8,5 +9,8 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true
+  },
+  css: {
+    postcss: resolve(__dirname, 'src/postcss.config.js')
   }
 })
