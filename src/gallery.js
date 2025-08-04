@@ -182,7 +182,15 @@ function showScoreTrend(history) {
         <h3 class="card-title mb-4">📈 スコア推移</h3>
         <div class="flex items-end justify-between h-32 bg-base-100 rounded-lg p-4">
           ${history.reverse().map((item, index) => {
-            const height = ((item.totalScore - minScore) / (maxScore - minScore)) * 80 + 20
+            // 高さ計算を修正：コンテナ高さ128px - パディング32px = 96px利用可能
+            // 上部に余白8pxを確保、最小20px、最大68pxの範囲で調整
+            let height
+            if (maxScore === minScore) {
+              // 全て同じスコアの場合は中央の高さ
+              height = 44
+            } else {
+              height = Math.round(((item.totalScore - minScore) / (maxScore - minScore)) * 48 + 20)
+            }
             const isLast = index === history.length - 1
             return `
               <div class="flex flex-col items-center">
