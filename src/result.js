@@ -87,7 +87,7 @@ function displayResults(resultData) {
       <div class="card bg-accent text-accent-content shadow-xl mb-8">
         <div class="card-body">
           <h3 class="card-title text-2xl mb-4">🤖 AI分析コメント</h3>
-          <p class="text-lg leading-relaxed">${resultData.comment}</p>
+          <p class="text-lg leading-relaxed whitespace-pre-line">${resultData.comment}</p>
         </div>
       </div>
       
