@@ -1,5 +1,5 @@
 {
-  "name": "shunsaku-vite-vanillajs",
+  "name": "swing-for-bonus",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
@@ -10,7 +10,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "A web app where CEO's golf swing determines employee bonuses",
   "devDependencies": {
     "autoprefixer": "^10.4.21",
     "postcss": "^8.4.32",
