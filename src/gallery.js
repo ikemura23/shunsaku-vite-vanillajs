@@ -12,17 +12,19 @@ export function showGalleryPage() {
     <div class="max-w-6xl mx-auto">
       <div class="flex justify-between items-center mb-8">
         <h1 class="text-4xl font-bold">📚 歴代スイング履歴</h1>
-        ${history.length > 0 ? `
-          <div class="dropdown dropdown-end">
-            <div tabindex="0" role="button" class="btn btn-outline btn-sm">
-              ⚙️ デバッグ機能
-            </div>
-            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn btn-outline btn-sm">
+            ⚙️ デバッグ機能
+          </div>
+          <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-64">
+            <li><a onclick="generateDummyData()">🎲 過去5年のダミーデータ作成</a></li>
+            <div class="divider my-1"></div>
+            ${history.length > 0 ? `
               <li><a onclick="deleteCurrentYearData()">🗑️ 今年のデータ削除</a></li>
               <li><a onclick="clearAllHistory()">⚠️ 全履歴削除</a></li>
-            </ul>
-          </div>
-        ` : ''}
+            ` : ''}
+          </ul>
+        </div>
       </div>
       
       ${history.length === 0 ? showEmptyState() : showHistoryList(history, currentYear)}
@@ -200,6 +202,46 @@ function showScoreTrend(history) {
 
 // デバッグ機能のセットアップ
 function setupDebugFunctions() {
+  // 過去5年のダミーデータ生成
+  window.generateDummyData = () => {
+    const currentYear = window.swingApp.currentYear
+    const existingYears = window.swingApp.history.map(h => h.year)
+    
+    // 過去5年のデータを生成（既存データがない年のみ）
+    const yearsToGenerate = []
+    for (let i = 1; i <= 5; i++) {
+      const year = currentYear - i
+      if (!existingYears.includes(year)) {
+        yearsToGenerate.push(year)
+      }
+    }
+    
+    if (yearsToGenerate.length === 0) {
+      notifyUtils.info('過去5年のデータは既に存在します')
+      return
+    }
+    
+    const confirmed = confirm(`過去${yearsToGenerate.length}年分のダミーデータを作成しますか？\n対象年度: ${yearsToGenerate.join(', ')}`)
+    
+    if (confirmed) {
+      const newData = generateDummyHistoryData(yearsToGenerate)
+      
+      // 既存データに追加
+      window.swingApp.history = [...window.swingApp.history, ...newData]
+      
+      // localStorageを更新
+      storage.save('swingHistory', window.swingApp.history)
+      
+      notifyUtils.success(`${yearsToGenerate.length}年分のダミーデータを作成しました`)
+      debugUtils.log(`Generated dummy data for years: ${yearsToGenerate.join(', ')}`)
+      
+      // ページを再表示
+      setTimeout(() => {
+        showGalleryPage()
+      }, 1000)
+    }
+  }
+  
   // 今年のデータ削除
   window.deleteCurrentYearData = () => {
     const currentYear = window.swingApp.currentYear
@@ -338,5 +380,103 @@ function fallbackShare(text) {
     notifyUtils.success('結果をクリップボードにコピーしました！')
   }).catch(() => {
     alert(text)
+  })
+}
+
+// ダミー履歴データ生成
+function generateDummyHistoryData(years) {
+  const dummyComments = [
+    'あなたのスイングからは、確かな実力と圧倒的な気迫が感じられました。社員の皆さんも大喜びです！',
+    '完璧なフォームと力強いスイング。経営者としての威厳とリーダーシップが見事に表現されています。',
+    'バランスの取れたフォームと安定した軌道。経営者としての落ち着きが表現されています。',
+    '良好なスイングフォームが確認できました。来年はさらなる飛躍が期待できそうです。',
+    '安定したスイングから、堅実な経営手腕が垣間見えます。社員も安心できるでしょう。',
+    'スイングに改善の余地はありますが、チャレンジ精神は十分に伝わってきました。',
+    'フォーム改善の余地はありますが、その努力する姿勢こそが真のリーダーシップです。'
+  ]
+  
+  const dummyVideoNames = [
+    'swing_practice_morning.mp4',
+    'golf_swing_session.mp4',
+    'president_swing_2024.mp4',
+    'golf_training_video.mov',
+    'swing_improvement.mp4',
+    'morning_golf_practice.mp4',
+    'swing_analysis_video.mov'
+  ]
+  
+  return years.map(year => {
+    // 年度によって傾向を変える（最近ほど高スコア傾向）
+    const currentYear = window.swingApp.currentYear
+    const yearDiff = currentYear - year
+    const baseScore = Math.max(45, 75 - yearDiff * 3) // 古いほどスコア低め
+    
+    // 各項目スコア生成
+    const scores = {}
+    const scoreItems = ['power', 'stability', 'beauty', 'growth', 'spirit']
+    
+    scoreItems.forEach(item => {
+      let itemScore = baseScore + Math.random() * 20 - 10 // ±10点のバラつき
+      
+      // 項目別特性
+      if (item === 'growth') {
+        // 成長性は年数が経つほど高め
+        itemScore += Math.min(15, yearDiff * 2)
+      } else if (item === 'spirit') {
+        // やる気は年によってランダム
+        itemScore += Math.random() * 15 - 7.5
+      }
+      
+      scores[item] = Math.max(0, Math.min(100, Math.round(itemScore)))
+    })
+    
+    // 総合スコア計算（重み付き平均）
+    const weights = { power: 20, stability: 25, beauty: 15, growth: 20, spirit: 20 }
+    let totalScore = 0
+    let totalWeight = 0
+    
+    scoreItems.forEach(item => {
+      totalScore += scores[item] * weights[item]
+      totalWeight += weights[item]
+    })
+    
+    totalScore = Math.round(totalScore / totalWeight)
+    
+    // ボーナス率計算
+    let bonusRate = 0
+    if (totalScore >= 86) bonusRate = 20
+    else if (totalScore >= 71) bonusRate = 10
+    else if (totalScore >= 51) bonusRate = 5
+    
+    // コメント選択
+    let comment = ''
+    if (totalScore >= 90) comment = dummyComments[0]
+    else if (totalScore >= 80) comment = dummyComments[Math.floor(Math.random() * 2) + 1]
+    else if (totalScore >= 70) comment = dummyComments[Math.floor(Math.random() * 2) + 3]
+    else comment = dummyComments[Math.floor(Math.random() * 2) + 5]
+    
+    // 分析日時（その年の12月の適当な日）
+    const analysisDate = new Date(year, 11, Math.floor(Math.random() * 25) + 1, 
+                                  Math.floor(Math.random() * 8) + 10).toISOString()
+    
+    // 動画情報
+    const videoFileName = dummyVideoNames[Math.floor(Math.random() * dummyVideoNames.length)]
+    const videoSize = Math.floor(Math.random() * 80 + 20) * 1024 * 1024 // 20-100MB
+    const videoDuration = Math.floor(Math.random() * 20) + 10 // 10-30秒
+    
+    return {
+      year,
+      totalScore,
+      scores,
+      bonusRate,
+      comment,
+      analysisDate,
+      videoInfo: {
+        fileName: videoFileName,
+        fileSize: videoSize,
+        fileType: 'video/mp4',
+        duration: videoDuration
+      }
+    }
   })
 }
