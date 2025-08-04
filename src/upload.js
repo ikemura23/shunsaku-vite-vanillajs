@@ -187,8 +187,14 @@ function setupUploadEventListeners() {
     fileInput.click()
   })
   
-  // ドラッグ&ドロップエリアクリック
+  // ドラッグ&ドロップエリアクリック（ボタン以外の部分）
   fileDropArea.addEventListener('click', (e) => {
+    // ファイル選択ボタンをクリックした場合は無視
+    if (e.target.id === 'file-select-btn' || e.target.closest('#file-select-btn')) {
+      return
+    }
+    
+    // ドロップエリアの他の部分をクリックした場合のみファイル選択
     if (e.target === fileDropArea || e.target.closest('#file-drop-area')) {
       fileInput.click()
     }
