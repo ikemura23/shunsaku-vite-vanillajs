@@ -5,12 +5,100 @@ import { showGalleryPage } from './gallery.js'
 import { analyzeSwing } from './scoring.js'
 import { storage, notifyUtils, debugUtils } from './utils.js'
 
+// 履歴データの初期化
+function initializeHistory() {
+  const existingHistory = JSON.parse(localStorage.getItem('swingHistory') || '[]')
+  
+  // 既に履歴がある場合はそのまま返す
+  if (existingHistory.length > 0) {
+    return existingHistory
+  }
+  
+  // 履歴が空の場合は初期データを生成
+  const currentYear = new Date().getFullYear()
+  const initialHistory = generateInitialHistoryData(currentYear)
+  
+  // localStorageに保存
+  storage.save('swingHistory', initialHistory)
+  
+  return initialHistory
+}
+
+// 初期履歴データ生成（過去3年分）
+function generateInitialHistoryData(currentYear) {
+  const dummyComments = [
+    '【技術分析】アドレス時の姿勢が安定しており、腰の回転と肩のラインが良好です。バックスイング時の左腕の伸びも美しく、ダウンスイング時の体重移動が滑らかです。インパクト瞬間の手首の使い方に力強さを感じます。\n\n【Good】経営者らしい堂々としたスタンスと決断力がスイングに表れています。\n【Next】この安定感を維持し、さらなる飛距離向上を目指しましょう。',
+    
+    '【技術分析】テークバック時の軸の安定性が良好で、ハーフウェイダウンでのクラブの軌道も適切です。グリップの握り方も基本に沿っており、フォロースルーまでの一連の動作にバランスを感じます。わずかにダウンスイング初期で急激な動きが見られます。\n\n【Good】冷静な判断力がスイングの安定性に繋がっています。\n【Next】切り返し時の間をもう少し意識すると、より滑らかなスイングになります。',
+    
+    '【技術分析】スタンス幅が適切で、バックスイング時の肩の回転も十分です。ダウンスイング時のタイミングは良好ですが、インパクト時に若干のブレが確認されます。全体的にバランスの取れたスイングで、向上心を感じます。\n\n【Good】継続的な改善への意欲がスイングに現れています。\n【Next】アドレス時のセットアップをより丁寧に行うと、スイング全体が向上します。'
+  ]
+  
+  return [currentYear - 3, currentYear - 2, currentYear - 1].map((year, index) => {
+    // 年度が新しいほど高スコア傾向
+    const baseScore = 65 + index * 8
+    
+    const scores = {
+      power: Math.max(50, Math.min(95, baseScore + Math.random() * 15 - 7)),
+      stability: Math.max(50, Math.min(95, baseScore + Math.random() * 15 - 7)),
+      beauty: Math.max(50, Math.min(95, baseScore + Math.random() * 15 - 7)),
+      growth: Math.max(50, Math.min(95, baseScore + Math.random() * 15 - 7)),
+      spirit: Math.max(50, Math.min(95, baseScore + Math.random() * 15 - 7))
+    }
+    
+    // 総合スコア計算
+    const weights = { power: 20, stability: 25, beauty: 15, growth: 20, spirit: 20 }
+    let totalScore = 0
+    let totalWeight = 0
+    
+    Object.entries(scores).forEach(([key, score]) => {
+      scores[key] = Math.round(score)
+      totalScore += scores[key] * weights[key]
+      totalWeight += weights[key]
+    })
+    
+    totalScore = Math.round(totalScore / totalWeight)
+    
+    // ボーナス率計算
+    let bonusRate = 0
+    if (totalScore >= 86) bonusRate = 20
+    else if (totalScore >= 71) bonusRate = 10
+    else if (totalScore >= 51) bonusRate = 5
+    
+    // 分析日時（その年の12月の適当な日）
+    const analysisDate = new Date(year, 11, Math.floor(Math.random() * 25) + 1, 
+                                  Math.floor(Math.random() * 8) + 10).toISOString()
+    
+    // 動画情報
+    const videoFileNames = [
+      'president_swing_analysis.mp4',
+      'golf_swing_session.mp4',
+      'morning_practice_swing.mp4'
+    ]
+    
+    return {
+      year,
+      totalScore,
+      scores,
+      bonusRate,
+      comment: dummyComments[index],
+      analysisDate,
+      videoInfo: {
+        fileName: videoFileNames[index],
+        fileSize: Math.floor(Math.random() * 60 + 30) * 1024 * 1024, // 30-90MB
+        fileType: 'video/mp4',
+        duration: Math.floor(Math.random() * 15) + 15 // 15-30秒
+      }
+    }
+  })
+}
+
 // グローバル状態管理
 window.swingApp = {
   currentYear: new Date().getFullYear(),
   currentVideo: null,
   currentScore: null,
-  history: JSON.parse(localStorage.getItem('swingHistory') || '[]'),
+  history: initializeHistory(),
   comments: JSON.parse(localStorage.getItem('swingComments') || '[]'),
   isAuthenticated: localStorage.getItem('isPresident') === 'true'
 }
