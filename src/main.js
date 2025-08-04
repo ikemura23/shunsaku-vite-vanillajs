@@ -1,5 +1,8 @@
 import './style.css'
 import { showUploadPage } from './upload.js'
+import { showResultPage } from './result.js'
+import { analyzeSwing } from './scoring.js'
+import { storage, notifyUtils, debugUtils } from './utils.js'
 
 // グローバル状態管理
 window.swingApp = {
@@ -17,7 +20,7 @@ const pages = {
   upload: () => showUploadPage(), // upload.js からインポート
   gallery: () => showGalleryPage(),
   analysis: () => showAnalysisPage(),
-  result: () => showResultPage()
+  result: () => showResultPage() // result.js からインポート
 }
 
 // ホームページ表示
@@ -102,33 +105,179 @@ function showGalleryPage() {
   `
 }
 
-// 分析中ページ表示（仮実装）
-function showAnalysisPage() {
+// 分析中ページ表示
+async function showAnalysisPage() {
   const mainContent = document.getElementById('main-content')
-  mainContent.innerHTML = `
-    <div class="max-w-2xl mx-auto text-center">
-      <h2 class="text-3xl font-bold mb-8">AI分析中...</h2>
-      <div class="loading loading-spinner loading-lg text-primary"></div>
-      <p class="mt-4">社長のスイングを分析しています</p>
-    </div>
-  `
+  
+  // 動画データがない場合
+  if (!window.swingApp.currentVideo) {
+    mainContent.innerHTML = `
+      <div class="max-w-2xl mx-auto text-center">
+        <div class="alert alert-warning mb-6">
+          <span>⚠️ 分析する動画データがありません</span>
+        </div>
+        <button class="btn btn-primary" onclick="navigateTo('upload')">動画をアップロード</button>
+      </div>
+    `
+    return
+  }
+  
+  // 分析中UI表示
+  showAnalysisUI()
+  
+  try {
+    // AI分析実行
+    const result = await analyzeSwing(window.swingApp.currentVideo)
+    
+    // 結果を履歴に保存
+    window.swingApp.history.push(result)
+    storage.save('swingHistory', window.swingApp.history)
+    
+    // 現在のスコアを更新
+    window.swingApp.currentScore = result
+    
+    debugUtils.log('Analysis completed and saved', result)
+    
+    // 結果ページに遷移
+    setTimeout(() => {
+      navigateTo('result')
+    }, 1000)
+    
+  } catch (error) {
+    debugUtils.error('Analysis failed', error)
+    notifyUtils.error('分析中にエラーが発生しました')
+    
+    // エラー時はアップロードページに戻る
+    setTimeout(() => {
+      navigateTo('upload')
+    }, 2000)
+  }
 }
 
-// 結果ページ表示（仮実装）
-function showResultPage() {
+// 分析中UI表示
+function showAnalysisUI() {
   const mainContent = document.getElementById('main-content')
+  
   mainContent.innerHTML = `
-    <div class="max-w-2xl mx-auto">
-      <h2 class="text-3xl font-bold text-center mb-8">結果発表</h2>
-      <div class="card bg-base-200 shadow-xl">
-        <div class="card-body">
-          <p class="text-center text-lg mb-4">🚧 実装中です...</p>
-          <button class="btn btn-outline" onclick="navigateTo('home')">ホームに戻る</button>
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold mb-4">🤖 AI分析中</h1>
+        <p class="text-xl text-base-content/70">社長のスイングを多角的に分析しています...</p>
+      </div>
+      
+      <!-- メインローディング表示 -->
+      <div class="card bg-base-200 shadow-xl mb-8">
+        <div class="card-body text-center py-12">
+          <div class="relative mb-8">
+            <div class="loading loading-ring loading-lg text-primary animate-ripple"></div>
+          </div>
+          
+          <div id="current-step" class="text-2xl font-bold mb-4">分析を開始しています...</div>
+          
+          <!-- プログレスバー -->
+          <div class="w-full bg-base-300 rounded-full h-3 mb-6">
+            <div id="progress-bar" class="bg-primary h-3 rounded-full transition-all duration-1000 ease-out" 
+                 style="width: 0%"></div>
+          </div>
+          
+          <div id="step-description" class="text-base-content/70">
+            動画データの前処理を行っています
+          </div>
+        </div>
+      </div>
+      
+      <!-- 分析ステップ表示 -->
+      <div class="grid md:grid-cols-4 gap-4">
+        <div class="step-card card bg-base-100 shadow-sm" data-step="0">
+          <div class="card-body text-center p-4">
+            <div class="step-icon text-2xl mb-2">📹</div>
+            <div class="step-title text-sm font-medium">動画解析</div>
+            <div class="step-status text-xs text-base-content/50">待機中</div>
+          </div>
+        </div>
+        
+        <div class="step-card card bg-base-100 shadow-sm" data-step="1">
+          <div class="card-body text-center p-4">
+            <div class="step-icon text-2xl mb-2">🏌️‍♂️</div>
+            <div class="step-title text-sm font-medium">スイング分析</div>
+            <div class="step-status text-xs text-base-content/50">待機中</div>
+          </div>
+        </div>
+        
+        <div class="step-card card bg-base-100 shadow-sm" data-step="2">
+          <div class="card-body text-center p-4">
+            <div class="step-icon text-2xl mb-2">🎯</div>
+            <div class="step-title text-sm font-medium">スコア算出</div>
+            <div class="step-status text-xs text-base-content/50">待機中</div>
+          </div>
+        </div>
+        
+        <div class="step-card card bg-base-100 shadow-sm" data-step="3">
+          <div class="card-body text-center p-4">
+            <div class="step-icon text-2xl mb-2">📊</div>
+            <div class="step-title text-sm font-medium">総合評価</div>
+            <div class="step-status text-xs text-base-content/50">待機中</div>
+          </div>
         </div>
       </div>
     </div>
   `
+  
+  // プログレス更新のイベントリスナー設定
+  setupAnalysisProgressListener()
 }
+
+// 分析プログレス更新リスナー
+function setupAnalysisProgressListener() {
+  let currentStep = 0
+  const totalSteps = 4
+  
+  window.addEventListener('analysisProgress', (event) => {
+    const { message } = event.detail
+    
+    // 現在のステップメッセージ更新
+    document.getElementById('current-step').textContent = message
+    
+    // プログレスバー更新
+    const progress = (currentStep + 1) / totalSteps * 100
+    document.getElementById('progress-bar').style.width = `${progress}%`
+    
+    // ステップカード更新
+    updateStepCard(currentStep, 'completed')
+    if (currentStep < totalSteps - 1) {
+      updateStepCard(currentStep + 1, 'active')
+    }
+    
+    currentStep++
+  })
+}
+
+// ステップカード状態更新
+function updateStepCard(stepIndex, status) {
+  const stepCard = document.querySelector(`[data-step="${stepIndex}"]`)
+  if (!stepCard) return
+  
+  const statusElement = stepCard.querySelector('.step-status')
+  const cardElement = stepCard
+  
+  // 既存の状態クラスを削除
+  cardElement.classList.remove('bg-primary', 'text-primary-content', 'bg-success', 'text-success-content')
+  
+  switch (status) {
+    case 'active':
+      cardElement.classList.add('bg-primary', 'text-primary-content')
+      statusElement.textContent = '実行中...'
+      break
+    case 'completed':
+      cardElement.classList.add('bg-success', 'text-success-content')
+      statusElement.textContent = '完了'
+      break
+    default:
+      statusElement.textContent = '待機中'
+  }
+}
+
+// 結果ページは result.js から import
 
 // ナビゲーション関数
 window.navigateTo = (page) => {
