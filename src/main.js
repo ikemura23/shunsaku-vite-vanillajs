@@ -1,6 +1,7 @@
 import './style.css'
 import { showUploadPage } from './upload.js'
 import { showResultPage } from './result.js'
+import { showGalleryPage } from './gallery.js'
 import { analyzeSwing } from './scoring.js'
 import { storage, notifyUtils, debugUtils } from './utils.js'
 
@@ -18,7 +19,7 @@ window.swingApp = {
 const pages = {
   home: () => showHomePage(),
   upload: () => showUploadPage(), // upload.js からインポート
-  gallery: () => showGalleryPage(),
+  gallery: () => showGalleryPage(), // gallery.js からインポート
   analysis: () => showAnalysisPage(),
   result: () => showResultPage() // result.js からインポート
 }
@@ -73,37 +74,7 @@ function showHomePage() {
 
 // アップロードページは upload.js から import
 
-// ギャラリーページ表示（仮実装）
-function showGalleryPage() {
-  const mainContent = document.getElementById('main-content')
-  const history = window.swingApp.history
-  
-  mainContent.innerHTML = `
-    <div class="max-w-4xl mx-auto">
-      <h2 class="text-3xl font-bold text-center mb-8">歴代スイング履歴</h2>
-      ${history.length === 0 
-        ? `<div class="text-center">
-             <p class="text-lg mb-4">まだスイング履歴がありません</p>
-             <button class="btn btn-primary" onclick="navigateTo('upload')">最初のスイングを記録する</button>
-           </div>`
-        : `<div class="grid md:grid-cols-2 gap-6">
-             ${history.map(item => `
-               <div class="card bg-base-200 shadow-xl">
-                 <div class="card-body">
-                   <h3 class="card-title">${item.year}年度</h3>
-                   <div class="stat">
-                     <div class="stat-title">スコア</div>
-                     <div class="stat-value text-primary">${item.score}</div>
-                     <div class="stat-desc">ボーナス${item.bonusRate}%増</div>
-                   </div>
-                 </div>
-               </div>
-             `).join('')}
-           </div>`
-      }
-    </div>
-  `
-}
+// ギャラリーページは gallery.js から import
 
 // 分析中ページ表示
 async function showAnalysisPage() {
