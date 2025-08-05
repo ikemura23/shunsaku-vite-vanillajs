@@ -16,6 +16,7 @@ npm run dev          # 開発サーバーを起動 (ポート3000、ブラウザ
 npm run build        # 本番用ビルド (dist/に出力)
 npm run preview      # 本番ビルドをローカルでプレビュー
 npm run deploy       # Cloudflare Pagesへデプロイ
+npx wrangler pages deploy dist --project-name empathy-radio  # Wranglerコマンドでの直接デプロイ
 ```
 
 ## アーキテクチャとコードパターン

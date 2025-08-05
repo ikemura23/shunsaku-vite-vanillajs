@@ -19,11 +19,23 @@ npm run build
 
 ### 2. デプロイの実行
 
+#### npmスクリプト経由（推奨）
+
 ```bash
 npm run deploy
 ```
 
-このコマンドでビルドとデプロイが一括実行されます。デプロイ完了後、コンソールに表示されるURLを確認し、README.mdのライブデモURLを更新してください。
+このコマンドでビルドとデプロイが一括実行されます。
+
+#### Wranglerコマンド直接実行
+
+```bash
+npx wrangler pages deploy dist --project-name empathy-radio
+```
+
+このコマンドで直接デプロイを実行できます。プロジェクト名を指定してデプロイします。
+
+デプロイ完了後、コンソールに表示されるURLを確認し、README.mdのライブデモURLを更新してください。
 
 ### 3. 初回デプロイ時の設定
 
