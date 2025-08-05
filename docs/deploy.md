@@ -20,10 +20,10 @@ npm run build
 ### 2. デプロイの実行
 
 ```bash
-npx wrangler pages deploy dist
+npm run deploy
 ```
 
-このコマンド一つでCloudflare Pagesにデプロイが完了します。
+このコマンドでビルドとデプロイが一括実行されます。デプロイ完了後、コンソールに表示されるURLを確認し、README.mdのライブデモURLを更新してください。
 
 ### 3. 初回デプロイ時の設定
 
@@ -53,4 +53,24 @@ wrangler pages project list
 
 ```bash
 wrangler pages deployment list
+```
+
+## デプロイ後の作業
+
+### URLの取得と更新
+
+デプロイ完了後、以下のコマンドで最新のデプロイURLを取得できます：
+
+```bash
+wrangler pages deployment list --project-name=your-project-name | head -n 2
+```
+
+または、デプロイ時のコンソール出力に表示されるURLを確認し、README.mdの「ライブデモ」セクションを更新してください。
+
+### README.mdの更新例
+
+```markdown
+## ライブデモ
+
+🚀 [ライブデモを見る](https://your-project-name.pages.dev)
 ```
