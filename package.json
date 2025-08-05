@@ -6,13 +6,18 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && npx wrangler pages deploy dist"
+    "deploy": "npm run build && npx wrangler pages deploy dist",
+    "slides": "slidev slides.md --port 3001",
+    "slides:build": "slidev build slides.md --out dist-slides",
+    "slides:export": "slidev export slides.md"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@slidev/cli": "^52.1.0",
+    "@slidev/theme-default": "^0.25.0",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.4.17",
