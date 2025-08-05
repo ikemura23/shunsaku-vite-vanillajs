@@ -5,80 +5,111 @@
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>悩み共有ラジオ - AI社内カウンセラー</title>
-  <style>
-    /* デバッグ用の一時的なスタイル */
-    .debug-visible {
-      border: 2px solid red !important;
-      background-color: #ffe6e6 !important;
-      min-height: 100px !important;
-    }
-    .tab-content {
-      display: block !important;
-      min-height: 200px;
-      padding: 20px;
-      margin: 20px 0;
-      border: 1px solid #ccc;
-    }
-    .hidden {
-      display: none !important;
-    }
-  </style>
 </head>
 <body>
-  <div id="app" style="min-height: 100vh; background-color: #f0f0f0;">
-    <!-- ヘッダー -->
-    <header style="background-color: #3b82f6; color: white; padding: 1rem;">
-      <div>
-        <h1 style="font-size: 1.25rem; font-weight: bold;">🧑‍⚕️ 悩み共有ラジオ</h1>
-      </div>
-    </header>
-
-    <!-- タブナビゲーション -->
-    <div style="display: flex; justify-content: center; margin: 1rem 0; gap: 0.5rem;">
-      <button class="tab" data-tab="chat" style="padding: 0.5rem 1rem; background: #e5e7eb; border: 1px solid #ccc; cursor: pointer;">💬 匿名チャット</button>
-      <button class="tab" data-tab="admin" style="padding: 0.5rem 1rem; background: #f9fafb; border: 1px solid #ccc; cursor: pointer;">📋 管理画面</button>
-      <button class="tab" data-tab="dashboard" style="padding: 0.5rem 1rem; background: #f9fafb; border: 1px solid #ccc; cursor: pointer;">📊 ダッシュボード</button>
-    </div>
-
-    <!-- メインコンテンツ -->
-    <main style="max-width: 1200px; margin: 0 auto; padding: 1rem;">
-      <!-- チャット画面 -->
-      <div id="chat-view" class="tab-content" style="background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">匿名でご相談ください</h2>
-        <p style="color: #666; margin-bottom: 1rem;">
-          完全匿名でAIカウンセラーにご相談いただけます。会話内容は保存されません。
-        </p>
+  <div id="app" class="min-h-screen bg-base-100 flex">
+    <!-- サイドバーナビゲーション -->
+    <aside class="w-64 bg-base-200 shadow-lg">
+      <div class="p-4">
+        <h1 class="text-lg font-bold text-primary mb-6">🧑‍⚕️ 悩み共有ラジオ</h1>
         
-        <!-- チャット表示エリア -->
-        <div id="chat-messages" style="height: 300px; overflow-y: auto; background: #f9fafb; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
-          <p>チャットエリアです。メッセージがここに表示されます。</p>
-        </div>
-
-        <!-- チャット入力 -->
-        <div style="display: flex; gap: 0.5rem;">
-          <input 
-            id="chat-input" 
-            type="text" 
-            placeholder="何かお悩みがあれば、お気軽にお話しください..." 
-            style="flex: 1; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px;"
-          />
-          <button id="send-button" style="padding: 0.75rem 1.5rem; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">送信</button>
-        </div>
+        <ul class="menu w-full">
+          <li>
+            <button class="nav-item active" data-view="chat">
+              <span class="text-xl">💬</span>
+              <span>匿名チャット</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-item" data-view="admin">
+              <span class="text-xl">📋</span>
+              <span>管理画面</span>
+              <span id="admin-badge" class="badge badge-error badge-sm hidden">0</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-item" data-view="dashboard">
+              <span class="text-xl">📊</span>
+              <span>ダッシュボード</span>
+            </button>
+          </li>
+        </ul>
       </div>
 
-      <!-- 管理画面 -->
-      <div id="admin-view" class="tab-content hidden" style="background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">管理画面 - エンパシー通知</h2>
-        <div id="notifications-list">
-          <p>管理画面が読み込まれました。通知がここに表示されます。</p>
+      <!-- サイドバー下部の情報 -->
+      <div class="absolute bottom-4 left-4 right-4">
+        <div class="card bg-base-100 shadow-sm">
+          <div class="card-body p-3">
+            <p class="text-xs text-base-content/70">
+              完全匿名システム<br>
+              会話は保存されません
+            </p>
+          </div>
         </div>
       </div>
+    </aside>
 
-      <!-- ダッシュボード -->
-      <div id="dashboard-view" class="tab-content hidden" style="background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">ダッシュボード - 全社感情状況</h2>
-        <div id="dashboard-content">
-          <p>ダッシュボードが読み込まれました。統計情報がここに表示されます。</p>
+    <!-- メインコンテンツエリア -->
+    <main class="flex-1 overflow-auto">
+      <!-- ヘッダー -->
+      <header class="navbar bg-base-100 border-b border-base-300">
+        <div class="navbar-start">
+          <h2 id="current-page-title" class="text-xl font-semibold">匿名チャット</h2>
+        </div>
+        <div class="navbar-end">
+          <div class="badge badge-outline">プロトタイプ版</div>
+        </div>
+      </header>
+
+      <!-- コンテンツ -->
+      <div class="p-6">
+        <!-- チャット画面 -->
+        <div id="chat-view" class="view-content">
+          <div class="card bg-base-200 shadow-xl">
+            <div class="card-body">
+              <p class="text-base-content/70 mb-4">
+                完全匿名でAIカウンセラーにご相談いただけます。会話内容は保存されません。
+              </p>
+              
+              <!-- チャット表示エリア -->
+              <div id="chat-messages" class="h-96 overflow-y-auto bg-base-100 rounded-lg p-4 mb-4 border">
+                <!-- チャットメッセージがここに表示される -->
+              </div>
+
+              <!-- チャット入力 -->
+              <div class="flex gap-2">
+                <input 
+                  id="chat-input" 
+                  type="text" 
+                  placeholder="何かお悩みがあれば、お気軽にお話しください..." 
+                  class="input input-bordered flex-1"
+                />
+                <button id="send-button" class="btn btn-primary">送信</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 管理画面 -->
+        <div id="admin-view" class="view-content hidden">
+          <div class="card bg-base-200 shadow-xl">
+            <div class="card-body">
+              <div id="notifications-list">
+                <!-- 通知リストがここに表示される -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ダッシュボード -->
+        <div id="dashboard-view" class="view-content hidden">
+          <div class="card bg-base-200 shadow-xl">
+            <div class="card-body">
+              <div id="dashboard-content">
+                <!-- ダッシュボードコンテンツがここに表示される -->
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </main>

@@ -5,54 +5,69 @@ let currentTab = 'chat'
 let chatMessages = []
 let notifications = []
 
-function setupTabSwitching() {
-  const tabs = document.querySelectorAll('.tab')
-  const tabContents = document.querySelectorAll('.tab-content')
+function setupNavigation() {
+  const navItems = document.querySelectorAll('.nav-item')
+  const viewContents = document.querySelectorAll('.view-content')
+  const pageTitle = document.getElementById('current-page-title')
   
-  console.log('タブ数:', tabs.length, 'コンテンツ数:', tabContents.length)
+  const pageTitles = {
+    'chat': '匿名チャット',
+    'admin': '管理画面 - エンパシー通知',
+    'dashboard': 'ダッシュボード - 全社感情状況'
+  }
   
-  tabs.forEach((tab, index) => {
-    console.log(`タブ ${index}:`, tab.getAttribute('data-tab'), tab)
+  console.log('ナビゲーション数:', navItems.length, 'コンテンツ数:', viewContents.length)
+  
+  navItems.forEach((navItem, index) => {
+    console.log(`ナビ ${index}:`, navItem.getAttribute('data-view'), navItem)
     
-    tab.addEventListener('click', (e) => {
+    navItem.addEventListener('click', (e) => {
       e.preventDefault()
-      console.log('タブクリック:', tab.getAttribute('data-tab'))
+      const targetView = navItem.getAttribute('data-view')
+      console.log('ナビクリック:', targetView)
       
-      // アクティブタブの見た目を更新
-      tabs.forEach(t => {
-        t.style.background = '#f9fafb'
-        t.style.fontWeight = 'normal'
-      })
-      tab.style.background = '#e5e7eb'
-      tab.style.fontWeight = 'bold'
+      // アクティブなナビゲーションアイテムを更新
+      navItems.forEach(item => item.classList.remove('active'))
+      navItem.classList.add('active')
       
-      // すべてのタブコンテンツを非表示
-      tabContents.forEach(content => {
+      // すべてのビューコンテンツを非表示
+      viewContents.forEach(content => {
         content.classList.add('hidden')
         console.log('非表示にした:', content.id)
       })
       
-      // 選択されたタブコンテンツを表示
-      const targetTab = tab.getAttribute('data-tab')
-      const targetContent = document.getElementById(`${targetTab}-view`)
+      // 選択されたビューコンテンツを表示
+      const targetContent = document.getElementById(`${targetView}-view`)
       
-      console.log('選択されたタブ:', targetTab, 'コンテンツ要素:', targetContent)
+      console.log('選択されたビュー:', targetView, 'コンテンツ要素:', targetContent)
       
       if (targetContent) {
         targetContent.classList.remove('hidden')
         console.log('表示した:', targetContent.id)
-        currentTab = targetTab
+        currentTab = targetView
+        
+        // ページタイトルを更新
+        if (pageTitle && pageTitles[targetView]) {
+          pageTitle.textContent = pageTitles[targetView]
+        }
+        
+        // ビュー切り替え時に対応する画面を再描画
+        if (targetView === 'admin') {
+          renderNotifications()
+        } else if (targetView === 'dashboard') {
+          renderDashboard()
+        }
       } else {
-        console.error('タブコンテンツが見つかりません:', `${targetTab}-view`)
+        console.error('ビューコンテンツが見つかりません:', `${targetView}-view`)
       }
     })
   })
   
-  // 初期表示でチャットタブを確実に表示
+  // 初期表示でチャットビューを確実に表示
   const chatView = document.getElementById('chat-view')
   if (chatView) {
     chatView.classList.remove('hidden')
-    console.log('初期表示: チャットタブを表示')
+    console.log('初期表示: チャットビューを表示')
   }
 }
 
@@ -130,20 +145,23 @@ function setupChat() {
 }
 
 function updateNotificationBadge() {
-  const adminTab = document.querySelector('[data-tab="admin"]')
+  const adminBadge = document.getElementById('admin-badge')
   const pendingCount = notifications.filter(n => n.status === 'pending').length
   
   if (pendingCount > 0) {
-    adminTab.innerHTML = `📋 管理画面 <span class="badge badge-error badge-sm">${pendingCount}</span>`
+    adminBadge.textContent = pendingCount
+    adminBadge.classList.remove('hidden')
   } else {
-    adminTab.innerHTML = '📋 管理画面'
+    adminBadge.classList.add('hidden')
   }
 }
+
+let renderNotifications
 
 function setupAdmin() {
   const notificationsList = document.getElementById('notifications-list')
   
-  function renderNotifications() {
+  renderNotifications = function() {
     console.log('管理画面をレンダリング中, 通知数:', notifications.length)
     
     if (notifications.length === 0) {
@@ -220,10 +238,12 @@ function getSeverityText(severity) {
   }
 }
 
+let renderDashboard
+
 function setupDashboard() {
   const dashboardContent = document.getElementById('dashboard-content')
   
-  function renderDashboard() {
+  renderDashboard = function() {
     console.log('ダッシュボードをレンダリング中')
     
     const departments = ['営業部', '開発部', '人事部', '総務部', '経理部']
@@ -345,8 +365,8 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM読み込み完了')
   
   try {
-    setupTabSwitching()
-    console.log('タブ切り替え設定完了')
+    setupNavigation()
+    console.log('ナビゲーション設定完了')
     
     setupChat()
     console.log('チャット設定完了')
