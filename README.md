@@ -4,6 +4,8 @@
 
 **〜運命の一振りが、社員の冬を暖かくする〜**
 
+https://07fdd9b6.swing-for-bonus.pages.dev/#home
+
 このプロジェクトは、Vite + Vanilla JavaScript + Tailwind CSS + daisyUIを使用したプロトタイプアプリです。
 
 ## ✨ 主要機能
