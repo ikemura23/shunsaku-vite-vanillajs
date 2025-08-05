@@ -3,7 +3,53 @@ import { analyzeSentiment, shouldNotifyManager, generateNotification } from './s
 
 let currentTab = 'chat'
 let chatMessages = []
-let notifications = []
+let notifications = [
+  {
+    id: 1001,
+    department: '開発部',
+    severity: 'high',
+    message: '開発部のメンバーが強いストレスを感じている可能性があります。早急な声かけをお勧めします。',
+    averageScore: 78,
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2時間前
+    status: 'pending'
+  },
+  {
+    id: 1002,
+    department: '営業部',
+    severity: 'medium',
+    message: '営業部のメンバーが疲労やストレスを感じている様子です。適度な声かけをご検討ください。',
+    averageScore: 45,
+    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5時間前
+    status: 'pending'
+  },
+  {
+    id: 1003,
+    department: '人事部',
+    severity: 'low',
+    message: '人事部のメンバーが軽度の不安を感じている可能性があります。タイミングを見て声かけをしてみてください。',
+    averageScore: 28,
+    timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1日前
+    status: 'responded'
+  },
+  {
+    id: 1004,
+    department: '総務部',
+    severity: 'medium',
+    message: '総務部のメンバーが疲労やストレスを感じている様子です。適度な声かけをご検討ください。',
+    averageScore: 52,
+    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6時間前
+    status: 'pending'
+  },
+  {
+    id: 1005,
+    department: '経理部',
+    severity: 'high',
+    message: '経理部のメンバーが強いストレスを感じている可能性があります。早急な声かけをお勧めします。',
+    averageScore: 82,
+    timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30分前
+    status: 'pending'
+  }
+]
 
 function setupNavigation() {
   const navItems = document.querySelectorAll('.nav-item')
@@ -164,6 +210,13 @@ function setupAdmin() {
   renderNotifications = function() {
     console.log('管理画面をレンダリング中, 通知数:', notifications.length)
     
+    // 通知を新しい順にソート
+    const sortedNotifications = [...notifications].sort((a, b) => b.timestamp - a.timestamp)
+    
+    // 未対応と対応済みに分ける
+    const pendingNotifications = sortedNotifications.filter(n => n.status === 'pending')
+    const respondedNotifications = sortedNotifications.filter(n => n.status === 'responded')
+    
     if (notifications.length === 0) {
       notificationsList.innerHTML = `
         <div class="text-center py-8 text-base-content/70">
@@ -174,25 +227,63 @@ function setupAdmin() {
       return
     }
     
-    notificationsList.innerHTML = notifications.map(notification => `
-      <div class="card bg-base-100 shadow-md mb-4">
+    let html = ''
+    
+    // 未対応の通知
+    if (pendingNotifications.length > 0) {
+      html += `
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold mb-3 flex items-center">
+            <span class="text-error">🚨</span>
+            <span class="ml-2">未対応の通知 (${pendingNotifications.length}件)</span>
+          </h3>
+      `
+      html += pendingNotifications.map(notification => createNotificationCard(notification)).join('')
+      html += '</div>'
+    }
+    
+    // 対応済みの通知
+    if (respondedNotifications.length > 0) {
+      html += `
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold mb-3 flex items-center">
+            <span class="text-success">✅</span>
+            <span class="ml-2">対応済み (${respondedNotifications.length}件)</span>
+          </h3>
+      `
+      html += respondedNotifications.map(notification => createNotificationCard(notification)).join('')
+      html += '</div>'
+    }
+    
+    notificationsList.innerHTML = html
+  }
+  
+  function createNotificationCard(notification) {
+    const timeAgo = getTimeAgo(notification.timestamp)
+    return `
+      <div class="card bg-base-100 shadow-md mb-4 ${notification.status === 'pending' ? 'border-l-4 border-l-error' : ''}">
         <div class="card-body">
           <div class="flex justify-between items-start">
             <div class="flex-1">
-              <h3 class="card-title text-lg">
-                ${notification.department} 
+              <h3 class="card-title text-lg flex items-center gap-2">
+                <span>${notification.department}</span>
                 <span class="badge badge-${getSeverityColor(notification.severity)}">${getSeverityText(notification.severity)}</span>
+                ${notification.status === 'pending' ? '<span class="badge badge-outline badge-sm">NEW</span>' : ''}
               </h3>
               <p class="text-base-content/80 mt-2">${notification.message}</p>
-              <p class="text-sm text-base-content/60 mt-2">
-                感情スコア: ${notification.averageScore}/100 | 
-                ${notification.timestamp.toLocaleString('ja-JP')}
-              </p>
+              <div class="flex items-center gap-4 mt-3 text-sm text-base-content/60">
+                <span>感情スコア: <strong class="text-${notification.averageScore > 60 ? 'error' : notification.averageScore > 40 ? 'warning' : 'success'}">${notification.averageScore}/100</strong></span>
+                <span>📅 ${timeAgo}</span>
+                <span>🕐 ${notification.timestamp.toLocaleString('ja-JP')}</span>
+              </div>
             </div>
             <div class="flex gap-2 ml-4">
               ${notification.status === 'pending' ? `
                 <button class="btn btn-success btn-sm" onclick="markAsResponded(${notification.id})">
                   ✅ 声かけ完了
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="postponeNotification(${notification.id})">
+                  ⏰ 後で対応
                 </button>
               ` : `
                 <span class="badge badge-success">対応済み</span>
@@ -201,7 +292,23 @@ function setupAdmin() {
           </div>
         </div>
       </div>
-    `).join('')
+    `
+  }
+  
+  function getTimeAgo(timestamp) {
+    const now = new Date()
+    const diffMs = now - timestamp
+    const diffMins = Math.floor(diffMs / (1000 * 60))
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    
+    if (diffMins < 60) {
+      return `${diffMins}分前`
+    } else if (diffHours < 24) {
+      return `${diffHours}時間前`
+    } else {
+      return `${diffDays}日前`
+    }
   }
   
   // 初期表示
@@ -216,6 +323,14 @@ function setupAdmin() {
       
       const giftResult = Math.random() < 0.3 ? 'Amazonギフト券 1,000円が当選しました！🎉' : 'おつかれさまでした。次回の抽選にご期待ください。'
       alert(`声かけ報告ありがとうございます！\n\n抽選結果: ${giftResult}`)
+    }
+  }
+  
+  window.postponeNotification = (notificationId) => {
+    const notification = notifications.find(n => n.id === notificationId)
+    if (notification) {
+      // 1時間後に再通知するように設定（実際のシステムでは別途実装）
+      alert(`${notification.department}の通知を後で対応に設定しました。\n1時間後に再度通知されます。`)
     }
   }
 }
